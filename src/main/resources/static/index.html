@@ -2,52 +2,201 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PulseDesk — Comment to Ticket Triage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8;
-    --accent: #38bdf8; --high: #ef4444; --medium: #f59e0b; --low: #22c55e;
+    --bg: hsl(228 45% 6%);
+    --surface: hsl(226 38% 10%);
+    --surface-2: hsl(226 34% 14%);
+    --line: hsl(226 28% 20%);
+    --text: hsl(220 30% 92%);
+    --muted: hsl(222 15% 62%);
+    --accent: hsl(192 95% 58%);
+    --accent-ink: hsl(228 45% 8%);
+    --high: hsl(0 78% 62%);
+    --medium: hsl(38 92% 55%);
+    --low: hsl(145 60% 48%);
+    --radius: 12px;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
   }
   * { box-sizing: border-box; }
-  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 2rem; }
-  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  p.subtitle { color: var(--muted); margin-top: 0; }
-  .layout { display: grid; grid-template-columns: 360px 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto; }
-  .card { background: var(--card); border-radius: 12px; padding: 1.25rem; }
-  textarea, select { width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: var(--text); font-family: inherit; margin-bottom: 0.75rem; }
-  textarea { min-height: 100px; resize: vertical; }
-  button { background: var(--accent); color: #0f172a; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
-  button:disabled { opacity: 0.6; cursor: not-allowed; }
-  #status { margin-top: 0.75rem; font-size: 0.9rem; min-height: 1.2rem; }
+  body {
+    font-family: "IBM Plex Sans", sans-serif;
+    background:
+      radial-gradient(1100px 500px at 80% -10%, hsl(192 95% 58% / 0.07), transparent 60%),
+      radial-gradient(800px 400px at 0% 110%, hsl(258 80% 60% / 0.05), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    min-height: 100vh;
+    line-height: 1.55;
+  }
+  header { max-width: 1160px; margin: 0 auto 2rem; }
+  .wordmark {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .wordmark .pulse { color: var(--accent); }
+  .subtitle { color: var(--muted); margin: 0.15rem 0 0; font-size: 0.95rem; }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 360px) 1fr 1fr;
+    gap: 1.25rem;
+    max-width: 1160px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .card > h2 {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .count {
+    font-family: "IBM Plex Sans", sans-serif;
+    color: var(--accent);
+    font-size: 0.8rem;
+    letter-spacing: 0;
+  }
+  label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--muted); margin-bottom: 0.35rem; }
+  textarea, select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    margin-bottom: 0.9rem;
+    transition: border-color 150ms var(--ease);
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  textarea:hover, select:hover { border-color: hsl(226 28% 30%); }
+  textarea:focus-visible, select:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-color: transparent;
+  }
+  button {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 0.65rem 1.4rem;
+    border-radius: 8px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 100ms var(--ease), opacity 100ms var(--ease);
+  }
+  button:hover { opacity: 0.9; }
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+  button.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--line);
+    font-weight: 500;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+  }
+  #status { margin-top: 0.8rem; font-size: 0.9rem; min-height: 1.3rem; }
   #status.error { color: var(--high); }
   #status.success { color: var(--low); }
-  .ticket { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 1rem; margin-bottom: 0.75rem; }
-  .ticket h3 { margin: 0 0 0.4rem 0; font-size: 1rem; }
-  .ticket p { margin: 0.25rem 0; color: var(--muted); font-size: 0.9rem; }
-  .badges { margin-bottom: 0.5rem; }
-  .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.4rem; }
-  .priority-HIGH { background: var(--high); color: white; }
-  .priority-MEDIUM { background: var(--medium); color: #1a1a1a; }
-  .priority-LOW { background: var(--low); color: #1a1a1a; }
-  .category { background: #334155; color: var(--text); }
-  #empty, .muted { color: var(--muted); font-size: 0.9rem; }
-  .comment { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
-  .comment p.comment-text { margin: 0.35rem 0 0.25rem 0; color: var(--text); font-size: 0.9rem; }
-  .comment p.comment-meta { margin: 0; color: var(--muted); font-size: 0.75rem; }
-  .status-ANALYZED { background: var(--low); color: #1a1a1a; }
-  .status-ANALYSIS_FAILED { background: var(--high); color: white; }
-  .status-RECEIVED { background: var(--medium); color: #1a1a1a; }
+  .item {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+    animation: rise 200ms var(--ease) both;
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .item h3 { margin: 0 0 0.35rem; font-size: 1rem; font-weight: 600; }
+  .item p { margin: 0.2rem 0; color: var(--muted); font-size: 0.9rem; }
+  .meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; }
+  .badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.55rem; }
+  .badge {
+    display: inline-block;
+    padding: 0.12rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .priority-HIGH { background: hsl(0 78% 62% / 0.15); color: var(--high); border: 1px solid hsl(0 78% 62% / 0.4); }
+  .priority-MEDIUM { background: hsl(38 92% 55% / 0.15); color: var(--medium); border: 1px solid hsl(38 92% 55% / 0.4); }
+  .priority-LOW { background: hsl(145 60% 48% / 0.15); color: var(--low); border: 1px solid hsl(145 60% 48% / 0.4); }
+  .status-ANALYZED { background: hsl(145 60% 48% / 0.15); color: var(--low); border: 1px solid hsl(145 60% 48% / 0.4); }
+  .status-ANALYSIS_FAILED { background: hsl(0 78% 62% / 0.15); color: var(--high); border: 1px solid hsl(0 78% 62% / 0.4); }
+  .status-RECEIVED { background: hsl(38 92% 55% / 0.15); color: var(--medium); border: 1px solid hsl(38 92% 55% / 0.4); }
+  .neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+  .empty { color: var(--muted); font-size: 0.9rem; border: 1px dashed var(--line); border-radius: 10px; padding: 1.1rem; text-align: center; }
+  .load-error { color: var(--high); font-size: 0.9rem; }
+  .load-error button { margin-top: 0.5rem; display: block; }
+  .skeleton {
+    height: 76px;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(100deg, var(--surface-2) 40%, hsl(226 30% 18%) 50%, var(--surface-2) 60%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .item { animation: none; }
+    .skeleton { animation: none; }
+    button, textarea, select { transition: none; }
+  }
+  @media (max-width: 1024px) {
+    .layout { grid-template-columns: 1fr 1fr; }
+    .layout > .card:first-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 680px) {
+    .layout { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-  <h1>PulseDesk</h1>
-  <p class="subtitle">Comment-to-ticket triage, powered by AI</p>
+  <header>
+    <h1 class="wordmark"><span class="pulse">Pulse</span>Desk</h1>
+    <p class="subtitle">Comment-to-ticket triage, powered by AI</p>
+  </header>
 
   <div class="layout">
     <div class="card">
       <h2>Submit a comment</h2>
       <form id="commentForm">
-        <textarea id="text" placeholder="What's the feedback?" required></textarea>
+        <label for="text">Feedback</label>
+        <textarea id="text" placeholder="What's the feedback?" required maxlength="2000"></textarea>
+        <label for="channel">Channel</label>
         <select id="channel">
           <option value="app_review">App review</option>
           <option value="web_form">Web form</option>
@@ -55,18 +204,18 @@
           <option value="other">Other</option>
         </select>
         <button type="submit" id="submitBtn">Submit</button>
-        <div id="status"></div>
+        <div id="status" role="status" aria-live="polite"></div>
       </form>
     </div>
 
     <div class="card">
-      <h2>Tickets</h2>
-      <div id="tickets"><p id="empty">Loading...</p></div>
+      <h2>Tickets <span class="count" id="ticketCount"></span></h2>
+      <div id="tickets"></div>
     </div>
 
     <div class="card">
-      <h2>Comments</h2>
-      <div id="comments"><p class="muted">Loading...</p></div>
+      <h2>Comments <span class="count" id="commentCount"></span></h2>
+      <div id="comments"></div>
     </div>
   </div>
 
@@ -76,47 +225,11 @@
   const submitBtn = document.getElementById('submitBtn');
   const ticketsEl = document.getElementById('tickets');
   const commentsEl = document.getElementById('comments');
+  const ticketCountEl = document.getElementById('ticketCount');
+  const commentCountEl = document.getElementById('commentCount');
 
-  async function loadComments() {
-    const res = await fetch('/comments');
-    const comments = await res.json();
-
-    if (comments.length === 0) {
-      commentsEl.innerHTML = '<p class="muted">No comments yet. Submit one on the left.</p>';
-      return;
-    }
-
-    commentsEl.innerHTML = comments.slice().reverse().map(c => `
-      <div class="comment">
-        <div class="badges">
-          <span class="badge status-${c.status}">${c.status.replace('_', ' ')}</span>
-          <span class="badge category">${escapeHtml(c.channel || 'unknown')}</span>
-        </div>
-        <p class="comment-text">${escapeHtml(c.text)}</p>
-        <p class="comment-meta">${new Date(c.createdAt).toLocaleString()}</p>
-      </div>
-    `).join('');
-  }
-
-  async function loadTickets() {
-    const res = await fetch('/tickets');
-    const tickets = await res.json();
-
-    if (tickets.length === 0) {
-      ticketsEl.innerHTML = '<p id="empty">No tickets yet.</p>';
-      return;
-    }
-
-    ticketsEl.innerHTML = tickets.slice().reverse().map(t => `
-      <div class="ticket">
-        <div class="badges">
-          <span class="badge priority-${t.priority}">${t.priority}</span>
-          <span class="badge category">${t.category}</span>
-        </div>
-        <h3>${escapeHtml(t.title)}</h3>
-        <p>${escapeHtml(t.summary)}</p>
-      </div>
-    `).join('');
+  function skeletons(n) {
+    return Array.from({ length: n }, () => '<div class="skeleton"></div>').join('');
   }
 
   function escapeHtml(str) {
@@ -125,10 +238,70 @@
     return div.innerHTML;
   }
 
+  function loadError(el, retryFn) {
+    el.innerHTML = '<div class="load-error">Could not load data — is the server running?<button class="ghost">Retry</button></div>';
+    el.querySelector('button').addEventListener('click', retryFn);
+  }
+
+  async function loadComments() {
+    try {
+      const res = await fetch('/comments');
+      if (!res.ok) throw new Error(res.status);
+      const comments = await res.json();
+      commentCountEl.textContent = comments.length || '';
+
+      if (comments.length === 0) {
+        commentsEl.innerHTML = '<div class="empty">No comments yet.<br>Submit one to see the triage in action.</div>';
+        return;
+      }
+
+      commentsEl.innerHTML = comments.slice().reverse().map(c => `
+        <div class="item">
+          <div class="badges">
+            <span class="badge status-${c.status}">${c.status.replace('_', ' ')}</span>
+            <span class="badge neutral">${escapeHtml(c.channel || 'unknown')}</span>
+          </div>
+          <p style="color: var(--text)">${escapeHtml(c.text)}</p>
+          <p class="meta">${new Date(c.createdAt).toLocaleString()}</p>
+        </div>
+      `).join('');
+    } catch {
+      loadError(commentsEl, loadComments);
+    }
+  }
+
+  async function loadTickets() {
+    try {
+      const res = await fetch('/tickets');
+      if (!res.ok) throw new Error(res.status);
+      const tickets = await res.json();
+      ticketCountEl.textContent = tickets.length || '';
+
+      if (tickets.length === 0) {
+        ticketsEl.innerHTML = '<div class="empty">No tickets yet.<br>Actionable comments become tickets automatically.</div>';
+        return;
+      }
+
+      ticketsEl.innerHTML = tickets.slice().reverse().map(t => `
+        <div class="item">
+          <div class="badges">
+            <span class="badge priority-${t.priority}">${t.priority}</span>
+            <span class="badge neutral">${t.category}</span>
+          </div>
+          <h3>${escapeHtml(t.title)}</h3>
+          <p>${escapeHtml(t.summary)}</p>
+          <p class="meta">from comment #${t.commentId} · ${new Date(t.createdAt).toLocaleString()}</p>
+        </div>
+      `).join('');
+    } catch {
+      loadError(ticketsEl, loadTickets);
+    }
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     submitBtn.disabled = true;
-    statusEl.textContent = 'Analyzing...';
+    statusEl.textContent = 'Analyzing…';
     statusEl.className = '';
 
     const text = document.getElementById('text').value;
@@ -154,7 +327,7 @@
       statusEl.className = 'success';
       form.reset();
       await Promise.all([loadTickets(), loadComments()]);
-    } catch (err) {
+    } catch {
       statusEl.textContent = 'Network error — is the server running?';
       statusEl.className = 'error';
     } finally {
@@ -162,6 +335,8 @@
     }
   });
 
+  ticketsEl.innerHTML = skeletons(3);
+  commentsEl.innerHTML = skeletons(3);
   loadTickets();
   loadComments();
 </script>
