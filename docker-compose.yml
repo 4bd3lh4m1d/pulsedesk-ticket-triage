@@ -1,0 +1,9 @@
+services:
+  pulsedesk:
+    build: .
+    image: pulsedesk:latest
+    container_name: ticket-ai-generator
+    env_file: .env
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

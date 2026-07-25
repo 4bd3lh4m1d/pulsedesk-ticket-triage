@@ -57,12 +57,18 @@ The stub triages by keywords (crash/error → BUG, charge/bill → BILLING, etc.
 
 ### Run with Docker
 
+Put `HF_API_TOKEN=hf_xxx` in a `.env` file at the project root (gitignored — the token is intentionally not baked into the image), then:
+
+```bash
+docker compose up -d --build
+```
+
+Or without Compose:
+
 ```bash
 docker build -t pulsedesk .
 docker run -d --env-file .env -p 8080:8080 pulsedesk
 ```
-
-The token is intentionally not baked into the image — put `HF_API_TOKEN=hf_xxx` in a local `.env` file (gitignored) and pass it at runtime.
 
 ## API
 
